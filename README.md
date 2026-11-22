@@ -122,9 +122,11 @@ If this were an employee's own tablet asking to join a company network, the 2018
 - WARP moves trust to Cloudflare, which can still see traffic metadata.
 - The screen lock check reads `/data/system/locksettings.db` through `su`. On a device without root it reports "not readable without root".
 
-## Report
+## Report and video
 
 The submitted report, in Spanish, is in [docs/report-es.pdf](docs/report-es.pdf). It walks through every step with figures and explains each decision and the security evaluation.
+
+The [walkthrough video](https://youtu.be/7-u0FoqGI-o) (4:36, in Spanish) covers the ROM, the virtual machine, the Android version and the three apps.
 
 ## Screenshots
 
