@@ -71,11 +71,13 @@ stop adbd
 start adbd
 ```
 
-Then, from the host, with [Android SDK Platform-Tools](https://developer.android.com/tools/releases/platform-tools) installed:
+Then, from the host, with [Android SDK Platform-Tools](https://developer.android.com/tools/releases/platform-tools) unzipped, for example in Downloads:
 
 ```powershell
-.\scripts\audit-tablet.ps1 -Adb "$env:LOCALAPPDATA\Android\Sdk\platform-tools\adb.exe"
+.\scripts\audit-tablet.ps1 -Adb "$HOME\Downloads\platform-tools\adb.exe"
 ```
+
+If `adb` is already on the PATH, `-Adb` can be left out.
 
 Output from the tablet on 19 November 2026:
 

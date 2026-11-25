@@ -6,7 +6,7 @@ Reads the security settings of the Android-x86 tablet over ADB. Nothing on the d
 .\audit-tablet.ps1
 
 .EXAMPLE
-.\audit-tablet.ps1 -Device 127.0.0.1:5555 -Adb "$env:LOCALAPPDATA\Android\Sdk\platform-tools\adb.exe"
+.\audit-tablet.ps1 -Device 127.0.0.1:5555 -Adb "$HOME\Downloads\platform-tools\adb.exe"
 #>
 [CmdletBinding()]
 param(
