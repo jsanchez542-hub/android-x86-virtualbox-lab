@@ -102,7 +102,7 @@ try {
     Invoke-VBoxManage @('storageattach', $Name, '--storagectl', 'SATA', '--port', 1, '--device', 0, '--type', 'dvddrive', '--medium', $iso)
 }
 catch {
-    # A half-created VM would block the next run, because the script refuses to overwrite an existing VM.
+    # A VM left unfinished would block the next run, because the script refuses to overwrite an existing VM.
     # Only the disk created by this run is deleted, never a file that was already there. unregistervm
     # deletes the disk once it is attached; before that it has to be closed on its own.
     Write-Warning "Setup of '$Name' failed, so the VM and its new disk are being removed."

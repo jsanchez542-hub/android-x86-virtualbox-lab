@@ -35,28 +35,28 @@ The installer is interactive:
 2. Choose "Create/Modify partitions", answer "No" to GPT (the VM boots with BIOS, so an MBR table is enough) and create one primary, bootable partition with cfdisk.
 3. Select `sda1` and format it as ext4.
 4. Install GRUB.
-5. Answer "No" when asked whether to install /system as read-write.
+5. Answer "No" when the installer asks whether /system should be writable.
 6. Eject the ISO and reboot. The VirtualBox installer for Windows does not add VBoxManage to the PATH, so the command uses its full path:
 
 ```powershell
 & "$env:ProgramFiles\Oracle\VirtualBox\VBoxManage.exe" storageattach android-x86-tablet --storagectl SATA --port 1 --device 0 --medium emptydrive
 ```
 
-ext4 keeps Linux file owners and permissions, which Android relies on to keep each app in its own sandbox. With /system read-only, apps cannot modify the operating system files.
+ext4 keeps Linux file owners and permissions, which Android relies on to keep each app in its own sandbox. With /system protected from writes, apps cannot modify the operating system files.
 
 ## Configuration
 
-On first boot I picked Spanish, joined VirtWifi (the VirtualBox NAT network as Android shows it), turned off usage and diagnostics reporting to Google and set a six-digit PIN. Then I switched to the dark theme, set the screen timeout to 2 minutes, hid sensitive notification content on the lock screen, renamed the device to "Mi PC Android" and put the three security apps in a folder on the home screen.
+On first boot I picked Spanish, joined VirtWifi (the VirtualBox NAT network as Android shows it), turned off usage and diagnostics reporting to Google and set a PIN of six digits. Then I switched to the dark theme, set the screen timeout to 2 minutes, hid sensitive notification content on the lock screen, renamed the device to "Mi PC Android" and put the three security apps in a folder on the home screen.
 
 ## Security apps
 
 | Need | App | Version | How I checked it |
 | --- | --- | --- | --- |
-| Encrypt files | SSE - File & Text Encryption, by Paranoia Works | 3.3.1 | AES-256 selected and the original file set to be deleted after encryption. A test file encrypted with a 32-character password starts with the `SSEFE` header, and the original is gone. |
+| Encrypt files | SSE - File & Text Encryption, by Paranoia Works | 3.3.1 | AES-256 selected and the original file set to be deleted after encryption. A test file encrypted with a password of 32 characters starts with the `SSEFE` header, and the original is gone. |
 | Secure traffic | 1.1.1.1 + WARP, by Cloudflare | 6.38.12 | After I approved the VPN profile, `tun0` came up with 172.16.0.2 and Cloudflare's trace page answered `warp=on`. |
-| Locate or wipe | Find Hub, by Google (Localizador in the Spanish interface) | 3.1.805 | Registered as a device admin with the wipe-data, force-lock and reset-password policies. |
+| Locate or wipe | Find Hub, by Google (Localizador in the Spanish interface) | 3.1.805 | Registered as a device admin with the `wipe-data`, `force-lock` and `reset-password` policies. |
 
-I only considered apps that are free, come from a known publisher, need no extra account and could be tested inside the VM. That ruled out Proton VPN, which requires a Proton account, and the third-party locator apps from the search results, one of them a sponsored listing with ads and in-app purchases.
+I only considered apps that are free, come from a known publisher, need no extra account and could be tested inside the VM. That ruled out Proton VPN, which requires a Proton account, and the locator apps from other developers in the search results, one of them a sponsored listing with ads and purchases inside the app.
 
 ## Audit
 
@@ -113,7 +113,7 @@ Most of the risks come with the build itself:
 - Storage encryption is not supported (`ro.crypto.state` is `unsupported`), so anyone with a copy of the virtual disk can read the data. SSE closes part of that gap for the files that matter.
 - GRUB reports "No TPM detected", so the boot is not measured. VirtualBox can add a virtual TPM.
 
-The settings I controlled ended up as intended: PIN lock, 2-minute timeout, hidden notification content, read-only /system, WARP connected and Find Hub able to lock or wipe the tablet.
+The settings I controlled ended up as intended: PIN lock, a screen timeout of 2 minutes, hidden notification content, /system protected from writes, WARP connected and Find Hub able to lock or wipe the tablet.
 
 If this were an employee's own tablet asking to join a company network, the 2018 patch level alone would be reason enough to refuse it, whatever apps it has installed. The image is fine for a lab and nothing more.
 
@@ -134,7 +134,7 @@ The [walkthrough video](https://youtu.be/7-u0FoqGI-o) (4:36, in Spanish) covers 
 
 | | |
 | --- | --- |
-| <img src="docs/images/iso-boot-menu.png" width="380" alt="Boot menu of the Android-x86 ISO"><br>Boot menu of the ISO | <img src="docs/images/system-read-only.png" width="380" alt="Installer question about a read-write /system, answered No, and the end of the installation"><br>/system kept read-only, installation finished |
+| <img src="docs/images/iso-boot-menu.png" width="380" alt="Boot menu of the Android-x86 ISO"><br>Boot menu of the ISO | <img src="docs/images/system-read-only.png" width="380" alt="Installer question about a writable /system, answered No, and the end of the installation"><br>/system kept protected from writes, installation finished |
 | <img src="docs/images/setup-network-and-diagnostics.png" width="380" alt="Setup wizard with the VirtWifi network and usage and diagnostics turned off"><br>VirtWifi network and diagnostics turned off | <img src="docs/images/system-information.png" width="380" alt="About tablet screen with Android 9, kernel 4.19.110 and the 2018 security patch level"><br>Android 9, kernel 4.19.110, patch level 2018-08-05 |
 | <img src="docs/images/home-screen.png" width="380" alt="Home screen with the Seguridad folder holding the three security apps"><br>Home screen and the security apps folder | <img src="docs/images/sse-encryption.png" width="380" alt="SSE settings, password strength meter and encryption report"><br>SSE settings, password strength and encryption report |
 | <img src="docs/images/warp-vpn.png" width="380" alt="Android VPN approval dialog and WARP connected"><br>VPN approval and WARP connected | <img src="docs/images/find-hub.png" width="380" alt="Find Hub location setting, device admin entry and registered device"><br>Find Hub: location, device admin and registered device |
