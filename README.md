@@ -25,7 +25,7 @@ Requirements: VirtualBox 7.2 and Windows PowerShell 5.1, the version I tested wi
 .\scripts\new-vm.ps1 -IsoPath "$HOME\Downloads\android-x86_64-9.0-r2.iso"
 ```
 
-The script checks the ISO against the SHA-1 in the release note before creating anything, and refuses to overwrite a VM with the same name. It also forwards host port 5555 to the guest's ADB port, bound to 127.0.0.1 so that only the host can reach it. If script execution is disabled on your machine, run it with `powershell -ExecutionPolicy Bypass -File .\scripts\new-vm.ps1 -IsoPath ...`.
+The script checks the ISO against the SHA-1 in the release note before creating anything, and refuses to overwrite a VM with the same name. If a step fails after the VM is registered, it removes that VM and the disk it created, so it can run again. It also forwards host port 5555 to the guest's ADB port, bound to 127.0.0.1 so that only the host can reach it. If script execution is disabled on your machine, run it with `powershell -ExecutionPolicy Bypass -File .\scripts\new-vm.ps1 -IsoPath ...`.
 
 ## Installing Android-x86
 

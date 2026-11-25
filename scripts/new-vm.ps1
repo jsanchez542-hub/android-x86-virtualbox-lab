@@ -64,37 +64,54 @@ if ($registered | Where-Object { $_ -like "`"$Name`" *" }) {
 
 Invoke-VBoxManage @('createvm', '--name', $Name, '--ostype', 'Linux26_64', '--register')
 
-$hardware = @(
-    '--memory', $MemoryMB,
-    '--cpus', $Cpus,
-    '--firmware', 'bios',
-    '--ioapic', 'on',
-    '--rtc-use-utc', 'on',
-    '--graphicscontroller', 'vboxvga',
-    '--vram', 128,
-    '--accelerate-3d', 'off',
-    '--usb-ohci', 'on',
-    '--mouse', 'usbtablet',
-    '--audio-enabled', 'off',
-    '--clipboard-mode', 'disabled',
-    '--drag-and-drop', 'disabled',
-    '--boot1', 'dvd',
-    '--boot2', 'disk',
-    '--boot3', 'none',
-    '--boot4', 'none',
-    '--nic1', 'nat',
-    '--nat-pf1', "adb,tcp,127.0.0.1,$AdbHostPort,,5555"
-)
-Invoke-VBoxManage (@('modifyvm', $Name) + $hardware)
+$diskCreated = $false
+$diskAttached = $false
+try {
+    $hardware = @(
+        '--memory', $MemoryMB,
+        '--cpus', $Cpus,
+        '--firmware', 'bios',
+        '--ioapic', 'on',
+        '--rtc-use-utc', 'on',
+        '--graphicscontroller', 'vboxvga',
+        '--vram', 128,
+        '--accelerate-3d', 'off',
+        '--usb-ohci', 'on',
+        '--mouse', 'usbtablet',
+        '--audio-enabled', 'off',
+        '--clipboard-mode', 'disabled',
+        '--drag-and-drop', 'disabled',
+        '--boot1', 'dvd',
+        '--boot2', 'disk',
+        '--boot3', 'none',
+        '--boot4', 'none',
+        '--nic1', 'nat',
+        '--nat-pf1', "adb,tcp,127.0.0.1,$AdbHostPort,,5555"
+    )
+    Invoke-VBoxManage (@('modifyvm', $Name) + $hardware)
 
-$configLine = & $VBoxManage showvminfo $Name --machinereadable | Where-Object { $_ -like 'CfgFile=*' }
-$configFile = ($configLine -replace '^CfgFile="(.*)"$', '$1') -replace '\\\\', '\'
-$disk = Join-Path (Split-Path -Parent $configFile) "$Name.vdi"
+    $configLine = & $VBoxManage showvminfo $Name --machinereadable | Where-Object { $_ -like 'CfgFile=*' }
+    $configFile = ($configLine -replace '^CfgFile="(.*)"$', '$1') -replace '\\\\', '\'
+    $disk = Join-Path (Split-Path -Parent $configFile) "$Name.vdi"
 
-Invoke-VBoxManage @('createmedium', 'disk', '--filename', $disk, '--size', ($DiskGB * 1024), '--format', 'VDI')
-Invoke-VBoxManage @('storagectl', $Name, '--name', 'SATA', '--add', 'sata', '--controller', 'IntelAhci', '--portcount', 2)
-Invoke-VBoxManage @('storageattach', $Name, '--storagectl', 'SATA', '--port', 0, '--device', 0, '--type', 'hdd', '--medium', $disk)
-Invoke-VBoxManage @('storageattach', $Name, '--storagectl', 'SATA', '--port', 1, '--device', 0, '--type', 'dvddrive', '--medium', $iso)
+    Invoke-VBoxManage @('createmedium', 'disk', '--filename', $disk, '--size', ($DiskGB * 1024), '--format', 'VDI')
+    $diskCreated = $true
+    Invoke-VBoxManage @('storagectl', $Name, '--name', 'SATA', '--add', 'sata', '--controller', 'IntelAhci', '--portcount', 2)
+    Invoke-VBoxManage @('storageattach', $Name, '--storagectl', 'SATA', '--port', 0, '--device', 0, '--type', 'hdd', '--medium', $disk)
+    $diskAttached = $true
+    Invoke-VBoxManage @('storageattach', $Name, '--storagectl', 'SATA', '--port', 1, '--device', 0, '--type', 'dvddrive', '--medium', $iso)
+}
+catch {
+    # A half-created VM would block the next run, because the script refuses to overwrite an existing VM.
+    # Only the disk created by this run is deleted, never a file that was already there. unregistervm
+    # deletes the disk once it is attached; before that it has to be closed on its own.
+    Write-Warning "Setup of '$Name' failed, so the VM and its new disk are being removed."
+    if ($diskCreated -and -not $diskAttached) {
+        & $VBoxManage closemedium disk $disk --delete
+    }
+    & $VBoxManage unregistervm $Name --delete
+    throw
+}
 
 Write-Host ""
 Write-Host "Created '$Name'. Start it with:"
