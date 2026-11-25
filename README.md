@@ -1,6 +1,6 @@
 # Android-x86 tablet on VirtualBox
 
-Coursework for Operating Systems II at Fundación Universitaria del Área Andina, November 2026. The assignment, "Mi PC Android", asked for an Android ROM installed in a virtual machine set up as a tablet, then customized and protected with apps from Google Play: one to encrypt files, one to secure network traffic and one to locate or wipe the device.
+Coursework for Operating Systems II, November 2026, in the online Systems Engineering program of Fundación Universitaria del Área Andina, a university in Bogotá. The assignment, "Mi PC Android", asked for an Android ROM installed in a virtual machine set up as a tablet, then customized and protected with apps from Google Play: one to encrypt files, one to secure network traffic and one to locate or wipe the device.
 
 The repository has two PowerShell scripts, one that recreates the virtual machine and one that audits the tablet's security settings over ADB, plus the report I submitted (in Spanish) and screenshots of the main steps.
 
