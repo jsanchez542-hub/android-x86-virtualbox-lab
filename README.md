@@ -36,10 +36,10 @@ The installer is interactive:
 3. Select `sda1` and format it as ext4.
 4. Install GRUB.
 5. Answer "No" when asked whether to install /system as read-write.
-6. Eject the ISO and reboot:
+6. Eject the ISO and reboot. The VirtualBox installer for Windows does not add VBoxManage to the PATH, so the command uses its full path:
 
 ```powershell
-VBoxManage storageattach android-x86-tablet --storagectl SATA --port 1 --device 0 --medium emptydrive
+& "$env:ProgramFiles\Oracle\VirtualBox\VBoxManage.exe" storageattach android-x86-tablet --storagectl SATA --port 1 --device 0 --medium emptydrive
 ```
 
 ext4 keeps Linux file owners and permissions, which Android relies on to keep each app in its own sandbox. With /system read-only, apps cannot modify the operating system files.

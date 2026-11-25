@@ -98,6 +98,6 @@ Invoke-VBoxManage @('storageattach', $Name, '--storagectl', 'SATA', '--port', 1,
 
 Write-Host ""
 Write-Host "Created '$Name'. Start it with:"
-Write-Host "  VBoxManage startvm `"$Name`""
+Write-Host "  & `"$VBoxManage`" startvm `"$Name`""
 Write-Host "When the installer finishes, eject the ISO before rebooting:"
-Write-Host "  VBoxManage storageattach `"$Name`" --storagectl SATA --port 1 --device 0 --medium emptydrive"
+Write-Host "  & `"$VBoxManage`" storageattach `"$Name`" --storagectl SATA --port 1 --device 0 --medium emptydrive"
